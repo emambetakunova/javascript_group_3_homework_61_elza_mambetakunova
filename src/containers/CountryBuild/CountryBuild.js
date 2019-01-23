@@ -6,30 +6,31 @@ import './CountryBuild.css'
 class CountryBuild extends Component {
 
     state = {
-        country: []
+        countries: [],
+        countryFormShown: false,
+        selectedCountryId: null
 
     };
 
     constructor(props) {
         super(props);
         console.log('[CountryBuild] constructor');
-        console.log('[CountryBuild] State exists:', this.state.country.length > 0);
+        console.log('[CountryBuild] State exists:', this.state.countries.length > 0);
     };
 
     componentDidMount() {
         console.log('[CountryBuild] DidMount');
 
-        const POSTS_URL = '/posts?_limit=4';
-        const USER_URL = '/users/';
 
-        axios.get(POSTS_URL).then(response => {
-            return Promise.all(response.data.map(post => {
-                return axios.get(USER_URL + post.userId).then(response => {
-                    return {...post, author: response.data.name};
+        axios.get().then(response => {
+            console.log(response);
+            return Promise.all(response.data.map(country => {
+                return axios.get(country.countryId).then(response => {
+                    return {...country, name: response.data.name, alpha3Code: response.data.alpha3Code};
                 })
             }));
-        }).then(posts => {
-            this.setState({posts});
+        }).then( countries => {
+            this.setState({ countries});
         }).catch(error => {
             console.log(error);
         });
@@ -42,13 +43,13 @@ class CountryBuild extends Component {
     togglePostForm = () => {
         this.setState(prevState => {
             console.log('[CountryBuild] Toggling form');
-            return {postsFormShown: !prevState.postsFormShown}
+            return {countryFormShown: !prevState.countryFormShown}
         })
     };
 
     postSelectedHandler = id => {
 
-        this.setState({selectedPostId: id});
+        this.setState({selectedCountryId: id});
 
     };
 

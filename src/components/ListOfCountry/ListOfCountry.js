@@ -1,7 +1,7 @@
-import React, {PureComponent} from 'react';
+import React, {Component} from 'react';
 import './ListOfCountry.css'
 
-class ListOfCountry extends PureComponent {
+class ListOfCountry extends Component {
 
     render() {
         return (

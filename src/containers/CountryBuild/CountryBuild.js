@@ -1,8 +1,9 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component} from 'react';
 import axios from 'axios'
 
 import './CountryBuild.css'
 import ListOfCountry from "../../components/ListOfCountry/ListOfCountry";
+import Country from "../../components/Country/Country";
 
 class CountryBuild extends Component {
 
@@ -10,12 +11,6 @@ class CountryBuild extends Component {
         countries: [],
         countryByName: [],
         countryFormShown: false,
-    };
-
-    constructor(props) {
-        super(props);
-        console.log('[CountryBuild] constructor');
-        console.log('[CountryBuild] State exists:', this.state.countries.length > 0);
     };
 
     componentDidMount() {
@@ -28,10 +23,6 @@ class CountryBuild extends Component {
         });
     }
 
-    componentDidUpdate() {
-        console.log('[CountryBuild] DidUpdate');
-    };
-
     countrySelectedHandler = name => {
         axios.get(`https://restcountries.eu/rest/v2/name/${name}`).then(response => {
             console.log(response.data);
@@ -43,9 +34,8 @@ class CountryBuild extends Component {
 
 
     render() {
-        console.log(this.state.countries);
         return (
-            <Fragment>
+            <div className="CountryBuild">
                 <section className="ListCountry">
                     {this.state.countries.map((country, id) => (
                         <ListOfCountry
@@ -55,7 +45,19 @@ class CountryBuild extends Component {
                         />
                     ))}
                 </section>
-            </Fragment>
+                <section className="Country">
+                    {this.state.countryByName.map((country, id) => (
+                        <Country
+                            key={id}
+                            title={country.name}
+                            flag={country.flag}
+                            capital={country.capital}
+                            population={country.population}
+                            borders={country.borders}
+                        />
+                    ))}
+                </section>
+            </div>
         );
     }
 }

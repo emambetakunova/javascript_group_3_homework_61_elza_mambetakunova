@@ -2,14 +2,14 @@ import React, {Component, Fragment} from 'react';
 import axios from 'axios'
 
 import './CountryBuild.css'
+import ListOfCountry from "../../components/ListOfCountry/ListOfCountry";
 
 class CountryBuild extends Component {
 
     state = {
         countries: [],
+        countryByName: [],
         countryFormShown: false,
-        selectedCountryId: null
-
     };
 
     constructor(props) {
@@ -19,18 +19,10 @@ class CountryBuild extends Component {
     };
 
     componentDidMount() {
-        console.log('[CountryBuild] DidMount');
-
-
-        axios.get().then(response => {
-            console.log(response);
-            return Promise.all(response.data.map(country => {
-                return axios.get(country.countryId).then(response => {
-                    return {...country, name: response.data.name, alpha3Code: response.data.alpha3Code};
-                })
-            }));
-        }).then( countries => {
-            this.setState({ countries});
+        axios.get('https://restcountries.eu/rest/v2/all?fields=name').then(response => {
+            this.setState({
+                countries: response.data
+            })
         }).catch(error => {
             console.log(error);
         });
@@ -38,26 +30,31 @@ class CountryBuild extends Component {
 
     componentDidUpdate() {
         console.log('[CountryBuild] DidUpdate');
-    }
-
-    togglePostForm = () => {
-        this.setState(prevState => {
-            console.log('[CountryBuild] Toggling form');
-            return {countryFormShown: !prevState.countryFormShown}
-        })
     };
 
-    postSelectedHandler = id => {
-
-        this.setState({selectedCountryId: id});
-
+    countrySelectedHandler = name => {
+        axios.get(`https://restcountries.eu/rest/v2/name/${name}`).then(response => {
+            console.log(response.data);
+            this.setState({
+                countryByName: response.data
+            })
+        })
     };
 
 
     render() {
+        console.log(this.state.countries);
         return (
             <Fragment>
-
+                <section className="ListCountry">
+                    {this.state.countries.map((country, id) => (
+                        <ListOfCountry
+                            key={id}
+                            title={country.name}
+                            clicked={() => this.countrySelectedHandler(country.name)}
+                        />
+                    ))}
+                </section>
             </Fragment>
         );
     }

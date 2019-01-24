@@ -10,7 +10,8 @@ class CountryBuild extends Component {
     state = {
         countries: [],
         countryByName: [],
-        countryFormShown: false,
+        borders: '',
+        countryShown: false,
     };
 
     componentDidMount() {
@@ -25,9 +26,26 @@ class CountryBuild extends Component {
 
     countrySelectedHandler = name => {
         axios.get(`https://restcountries.eu/rest/v2/name/${name}`).then(response => {
-            console.log(response.data);
+            const borders = response.data[0].borders;
+            const promises = borders.map(code => {
+                return axios.get('https://restcountries.eu/rest/v2/alpha/' + code);
+            });
+            Promise.all(promises).then(response => {
+                const namesCountry = response.map(country => {
+                    return country.data.name;
+                });
+                if (namesCountry.length === 0) {
+                    this.setState({
+                        borders: "No borders"
+                    })
+                } else if (namesCountry.length > 0) {
+                    this.setState({
+                        borders: namesCountry.join(', ')
+                    })
+                }
+            });
             this.setState({
-                countryByName: response.data
+                countryByName: response.data, countryShown: true
             })
         })
     };
@@ -45,7 +63,7 @@ class CountryBuild extends Component {
                         />
                     ))}
                 </section>
-                <section className="Country">
+                <section className="CountryWrap">
                     {this.state.countryByName.map((country, id) => (
                         <Country
                             key={id}
@@ -53,7 +71,7 @@ class CountryBuild extends Component {
                             flag={country.flag}
                             capital={country.capital}
                             population={country.population}
-                            borders={country.borders}
+                            borders={this.state.borders}
                         />
                     ))}
                 </section>

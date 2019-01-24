@@ -1,5 +1,8 @@
-.Country {
+.CountryWrap {
     margin: 0 auto;
+    text-align: center;
+    width: 60%;
+    border: solid 3px #ffbb42;
 }
 
 .Country img {
@@ -9,4 +12,5 @@
 
 .Country span {
     display: block;
+    margin-bottom: 10px;
 }
